@@ -6,11 +6,28 @@
 /*   By: mimayumi <mimayumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 13:19:33 by mimayumi          #+#    #+#             */
-/*   Updated: 2024/11/30 16:16:59 by mimayumi         ###   ########.fr       */
+/*   Updated: 2024/12/23 18:57:27 by mimayumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+
+int	ft_putstr(char *args)
+{
+	int	i;
+
+	i = 0;
+	if (args == NULL)
+	{
+		ft_putstr("(null)");
+		return ;
+	}
+	while (args[i])
+	{
+		ft_putchar(args[i]);
+		i++;
+	}
+}
 
 int	ft_putchar(char c)
 {
@@ -18,32 +35,36 @@ int	ft_putchar(char c)
 	return (1);
 }
 
-int	verify(va_list args, char character) //vai verificar o caracter depois do % pra saber o tipo do args
+int	ft_verify(char character, va_list args)
 {
+	int	len;
+
+	len = 0;
 	if (character == 'c')
-		ft_putchar(va_args(args, int));
+		len = ft_putchar(args);
 	else if (character == 's')
-		ft_putstr(va_args(args, char *));
-	else if (character == 'p')
-		//função que irá printar um ponteiro
+		len = ft_putstr(args);
 	else if (character == 'd' || character == 'i')
-		ft_putnbr(/*fazer essa função*/);
+		len = ft_putnbr(args);
 	else if (character == 'u')
-		//função que irá printar unsigned
+		len = ft_putnbr_u(args);
 	else if (character == 'x' || character == 'X')
-		//função com condição se encontrar um ou outro
+		len = ft_hexa(args);
+	else if (character == 'p')
+		len = ft_hexa_p(args);
 	else
-		ft_putchar('%');	
+		len = ft_putchar('%');
+	return (len);
 }
 
 int	ft_printf(const char *format, ...)
 {
 	va_list	args;
 	int		i;
-	int		total;
+	int		len;
 
 	i = 0;
-	total = 0;
+	len = 0;
 	if (!format)
 		return (-1);
 	va_start(args, format);
@@ -52,12 +73,12 @@ int	ft_printf(const char *format, ...)
 		if (format[i] == '%')
 		{
 			i++;
-			total += verify(args, format[i]);
+			len += ft_verify(args, format[i]);
 		}
 		else
-			total += ft_putchar(format[i]);
+			len += ft_putchar(format[i]);
 		i++;
 	}
 	va_end(args);
-	return (total);
+	return (len);
 }
